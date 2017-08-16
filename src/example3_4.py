@@ -64,10 +64,8 @@ def chain(x, mode = 0,counter = {}):
 
 from steepest_descent import grad_method
 
-def capsule():
-    '''
-    Capsule function for tests
-    '''
+if __name__ == '__main__':
+    ''' Main statements '''
     # x = np.random.rand(len(mass) * 2)
     x = np.array([0.85454128, 0.33411715, 0.53942535, 0.21662987, 0.63774436, 0.79173458, 0.21410974, 0.15384516, 0.76524993, 0.83061825, 0.85518546, 0.57445061, 0.44503847, 0.47772461, 0.34943261, 0.6835797, 0.69350642, 0.04454588, 0.93143294, 0.11527991])
     # x = np.ones(len(mass) * 2)
@@ -88,5 +86,3 @@ def capsule():
     print 'f\'(x*) =', chain(res, mode = 1)[0]
     print 'Number of evaluations:', cont
     print ' -----------------------------'
-
-capsule()

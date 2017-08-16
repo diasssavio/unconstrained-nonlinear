@@ -1,5 +1,5 @@
 import numpy as np
-from testF import power, diagonal7, sugar, rosenbrock
+from testF import power, sugar
 
 cont = {'fun':0, 'grad':0} # counter of function and gradient evaluations
 
@@ -107,23 +107,19 @@ def grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05, line_search
 
     return x, current_f
 
-def capsule():
-    '''
-    Capsule function for tests
-    '''
+if __name__ == '__main__':
+    ''' Main statements '''
     x_bar = np.ones(2)
     # x_bar = np.ones(4)
-    x_bar = np.random.rand(4)
-    # x_bar = np.array([-0.1, -0.2])
+    x_bar = np.random.rand(2)
+    x_bar = np.array([-0.1, -0.2])
     initial_t = 1 # = {1, 5} (for armijo's)
     iter_limit = 100
     tol = 1e-05
 
-    res, obj = grad_method(power, x_bar, initial_t, iter_limit, tol, 3)
+    res, obj = grad_method(sugar, x_bar, initial_t, iter_limit, tol, 2)
 
     print '\n\n ---------- RESULT: ----------'
     print 'x* =', res, '\nw/ f(x*)=', obj
     print 'Number of evaluations:', cont
     print ' -----------------------------'
-
-capsule()
