@@ -1,10 +1,10 @@
 import numpy as np
-from testF import power, diagonal7, sugar, rosenbrock
+from testF import power, sugar
 
 cont = {'fun':0, 'grad':0} # counter of function and gradient evaluations
 
 def wolfe_LS(func, x, d, t0, sigma_A, sigma_C):
-    '''Wolfe Line Search stepsize method for descent optimisation methods'''
+    ''' Wolfe Line Search stepsize method for descent optimisation methods '''
 
     def extrapolation(R_k, rho = 2):
         return rho * R_k
@@ -33,7 +33,7 @@ def wolfe_LS(func, x, d, t0, sigma_A, sigma_C):
 
 # @profile
 def newton_method(func, x0, iter_limit = 100, tol = 1e-05):
-    '''Newton method for unconstrained non-linear optimisation using inverse'''
+    ''' Newton method for unconstrained non-linear optimisation using inverse '''
     x = x0
     current_f, grad_f, hessian_f = None, None, None
     for i in range(0, iter_limit):
@@ -53,15 +53,15 @@ def newton_method(func, x0, iter_limit = 100, tol = 1e-05):
 
 # @profile
 def newton_method2(func, x0, iter_limit = 100, tol = 1e-05):
-    '''Newton method for unconstrained non-linear optimisation solving a linear system'''
+    ''' Newton method for unconstrained non-linear optimisation solving a linear system '''
     x = x0
     current_f, grad_f, hessian_f = None, None, None
     for i in range(0, iter_limit):
         grad_f, _ = func(x, mode = 1, counter = cont)
         current_f, _ = func(x, mode = 0, counter = cont)
 
-        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        # print 'x_bar = ', x
+        print 'Iteration #', i + 1, 'w/ f(x) =', current_f
+        print 'x_bar = ', x
         if np.linalg.norm(grad_f, np.inf) < tol:
             break
 
@@ -71,15 +71,15 @@ def newton_method2(func, x0, iter_limit = 100, tol = 1e-05):
     return x, current_f
 
 def generalized_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
-    '''Generalized Newton method for unconstrained non-linear optimisation'''
+    ''' Generalised Newton method for unconstrained non-linear optimisation '''
     x, sigma_A, sigma_C = x0, 0.4, 0.8
     current_f, grad_f, hessian_f = None, None, None
     for i in range(0, iter_limit):
         grad_f, _ = func(x, mode = 1, counter = cont)
         current_f, _ = func(x, mode = 0, counter = cont)
 
-        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        # print 'x_bar = ', x
+        print 'Iteration #', i + 1, 'w/ f(x) =', current_f
+        print 'x_bar = ', x
         if np.linalg.norm(grad_f, np.inf) < tol:
             break
 
@@ -87,21 +87,18 @@ def generalized_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
         direction, t_k = None, 1
         try:
             direction = np.linalg.solve(hessian_f, grad_f)
-        except LinAlgError:
+        except np.linalg.linalg.LinAlgError:
             direction = - grad_f
             t_k = wolfe_LS(func, x, direction, t, sigma_A, sigma_C)
-        x += t_k * direction
+        x -= t_k * direction
 
     return x, current_f
 
-def capsule():
-    '''
-    Capsule function for tests
-    '''
-    x_bar = np.ones(2)
+if __name__ == '__main__':
+    ''' Main statements '''
     # x_bar = np.ones(4)
     x_bar = np.random.rand(4)
-    # x_bar = np.array([-0.1, -0.2])
+    # x_bar = np.array([-0.1, -0.2]) # initial point for sugar function
     initial_t = 1 # = {1, 5} (for armijo's)
     iter_limit = 100
     tol = 1e-05
@@ -114,5 +111,3 @@ def capsule():
     print 'x* =', res, '\nw/ f(x*)=', obj
     print 'Number of evaluations:', cont
     print ' -----------------------------'
-
-capsule()
