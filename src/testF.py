@@ -55,29 +55,6 @@ def sugar(x, mode = 0,counter = {}):
         aux2 = -12 * (np.dot(x.reshape(len(x),1), np.ones_like(x).reshape(1,len(x))) + x.sum() * np.eye(len(x)))
         return np.dot(aux1.reshape(len(aux1), 1), aux.reshape(1,len(aux))) + np.exp(-6.0 * np.dot(x,x)) * aux2, 0
 
-def rosenbrock(x, mode = 0,counter = {}):
-    '''A blackbox method for evaluating the Rosenbrock function and its derivatives'''
-    if mode == 0: # Return f(x), status
-        if counter:
-            counter['fun'] += 1
-        return (1 - x[0]) ** 2 + 100 * (x[1] - x[0] ** 2) ** 2, 0
-    elif mode == 1: # Return f'(x), status
-        if counter:
-            counter['grad'] += 1
-        aux1 = 200 * (x[1] - (x[0] ** 2))
-        aux2 = 4 * x[0] * (101 * (x[0] ** 2) - 100 * x[1] - 1)
-        return np.array([aux1, aux2]), 0
-    elif mode == 2: # Return f(x), f'(x), status
-        if counter:
-            counter['fun'] += 1
-            counter['grad'] += 1
-        return (1 - x[0]) ** 2 + 100 * (x[1] - x[0] ** 2) ** 2, np.array([200 * (x[1] - x[0] ** 2), 4 * x[0] * (101 * (x[0] ** 2) - 100 * x[1] - 1)]), 0
-    elif mode == 3:
-        aux = -12 * np.exp(-6.0 * np.dot(x,x)) * x
-        aux1 = np.ones_like(x) - 12 * x.sum() * x
-        aux2 = -12 * (np.dot(x.reshape(len(x),1), np.ones_like(x).reshape(1,len(x))) + x.sum() * np.eye(len(x)))
-        return np.dot(aux1.reshape(len(aux1), 1), aux.reshape(1,len(aux))) + np.exp(-6.0 * np.dot(x,x)) * aux2, 0
-
 def raydan1(x, mode=0, counter={}):
     aux = np.arange(1, len(x) + 1) / 10
     if mode == 0:
