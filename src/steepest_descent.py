@@ -107,45 +107,6 @@ def grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05, line_search
 
     return x, current_f
 
-# @profile
-def newton_method(func, x0, iter_limit = 100, tol = 1e-05):
-    '''Newton method for unconstrained non-linear optimisation using inverse'''
-    x = x0
-    current_f, grad_f, hessian_f = None, None, None
-    for i in range(0, iter_limit):
-        grad_f, _ = func(x, mode = 1, counter = cont)
-        current_f, _ = func(x, mode = 0, counter = cont)
-
-        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        # print 'x_bar = ', x
-        if np.linalg.norm(grad_f, np.inf) < tol:
-            break
-
-        hessian_f, _ = func(x, mode = 3, counter = cont)
-        hessian_inv = np.linalg.inv(hessian_f)
-        x -= np.dot(hessian_inv, grad_f)
-
-    return x, current_f
-
-# @profile
-def newton_method2(func, x0, iter_limit = 100, tol = 1e-05):
-    '''Newton method for unconstrained non-linear optimisation solving a linear system'''
-    x = x0
-    current_f, grad_f, hessian_f = None, None, None
-    for i in range(0, iter_limit):
-        grad_f, _ = func(x, mode = 1, counter = cont)
-        current_f, _ = func(x, mode = 0, counter = cont)
-
-        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        # print 'x_bar = ', x
-        if np.linalg.norm(grad_f, np.inf) < tol:
-            break
-
-        hessian_f, _ = func(x, mode = 3, counter = cont)
-        x -= np.linalg.solve(hessian_f, grad_f)
-
-    return x, current_f
-
 def capsule():
     '''
     Capsule function for tests
@@ -158,9 +119,7 @@ def capsule():
     iter_limit = 100
     tol = 1e-05
 
-    # res, obj = grad_method(power, x_bar, initial_t, iter_limit, tol, 3)
-    # res, obj = newton_method(power, x_bar)
-    res, obj = newton_method2(power, x_bar)
+    res, obj = grad_method(power, x_bar, initial_t, iter_limit, tol, 3)
 
     print '\n\n ---------- RESULT: ----------'
     print 'x* =', res, '\nw/ f(x*)=', obj
