@@ -70,8 +70,8 @@ def newton_method2(func, x0, iter_limit = 100, tol = 1e-05):
 
     return x, current_f
 
-def generalized_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
-    ''' Generalised Newton method for unconstrained non-linear optimisation '''
+def globalized_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
+    ''' Globalized Newton method for unconstrained non-linear optimisation '''
     x, sigma_A, sigma_C = x0, 0.4, 0.8
     current_f, grad_f, hessian_f = None, None, None
     for i in range(0, iter_limit):
@@ -94,18 +94,62 @@ def generalized_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
 
     return x, current_f
 
+def quasi_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
+    ''' Quasi-Newton method for unconstrained non-linear optimisation '''
+
+    def dfp_matrix(W_k, y_k, s_k):
+        aux = np.dot(W_k, y_k)
+        p1 = (s_k * s_k.reshape(len(s_k), 1)) / np.dot(y_k, s_k)
+        p2 = aux * aux.reshape(len(aux), 1) / np.dot(y_k, aux)
+        B_k = p1 - p2
+        return W_k + B_k
+
+    def bfgs_matrix(W_k, y_k, s_k):
+        pass
+
+    x, W_k, y_k, s_k, sigma_A, sigma_C = x0, np.eye(len(x0)), None, None, 0.4, 0.6
+    current_f, _ = func(x, mode = 0, counter = cont)
+    grad_f, _ = func(x, mode = 1, counter = cont)
+    for i in range(0, iter_limit):
+        print ' -----------------------------'
+        print 'Iteration #', i + 1, 'w/ f(x) =', current_f
+        print 'x_bar =', x
+        # print 'W_k =', W_k
+        print 'eigenvalues = ', np.linalg.eigvals(W_k)
+        # print ' -----------------------------'
+        if np.linalg.norm(grad_f, np.inf) < tol:
+            break
+
+        direction = - np.dot(W_k, grad_f)
+        t_k = wolfe_LS(func, x, direction, t, sigma_A, sigma_C)
+
+        s_k = - x
+        y_k = - grad_f
+
+        x += t_k * direction
+
+        current_f, _ = func(x, mode = 0, counter = cont)
+        grad_f, _ = func(x, mode = 1, counter = cont)
+
+        s_k += x
+        y_k += grad_f
+        W_k = dfp_matrix(W_k, y_k, s_k)
+
+    return x, current_f
+
 if __name__ == '__main__':
     ''' Main statements '''
-    # x_bar = np.ones(4)
-    x_bar = np.random.rand(4)
-    # x_bar = np.array([-0.1, -0.2]) # initial point for sugar function
+    x_bar = np.ones(2)
+    # x_bar = np.random.rand(4)
+    x_bar = np.array([-0.1, -0.2]) # initial point for sugar function
     initial_t = 1 # = {1, 5} (for armijo's)
-    iter_limit = 100
+    iter_limit = 10
     tol = 1e-05
 
     # res, obj = newton_method(power, x_bar)
     # res, obj = newton_method2(power, x_bar)
-    res, obj = generalized_newton(power, x_bar, initial_t, iter_limit, tol)
+    # res, obj = globalized_newton(power, x_bar, initial_t, iter_limit, tol)
+    res, obj = quasi_newton(power, x_bar, initial_t, iter_limit, tol)
 
     print '\n\n ---------- RESULT: ----------'
     print 'x* =', res, '\nw/ f(x*)=', obj
