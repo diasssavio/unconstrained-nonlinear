@@ -92,7 +92,7 @@ def globalized_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
             t_k = wolfe_LS(func, x, direction, t, sigma_A, sigma_C)
         x -= t_k * direction
 
-    return x, current_f
+    return x, current_f, grad_f
 
 def quasi_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
     ''' Quasi-Newton method for unconstrained non-linear optimisation '''
@@ -105,7 +105,12 @@ def quasi_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
         return W_k + B_k
 
     def bfgs_matrix(W_k, y_k, s_k):
-        pass
+        aux1 = np.dot(W_k, y_k)
+        aux2 = np.dot(y_k, s_k)
+        p1 = ((s_k * aux1.reshape(len(aux1), 1)) + (aux1 * s_k.reshape(len(s_k), 1))) / aux2
+        p2 = (s_k * s_k.reshape(len(s_k), 1)) / aux2
+        p3 = np.dot(y_k, aux1) / aux2
+        return W_k - p1 + p2 + (p3 * p2)
 
     x, W_k, y_k, s_k, sigma_A, sigma_C = x0, np.eye(len(x0)), None, None, 0.4, 0.6
     current_f, _ = func(x, mode = 0, counter = cont)
@@ -133,25 +138,27 @@ def quasi_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
 
         s_k += x
         y_k += grad_f
-        W_k = dfp_matrix(W_k, y_k, s_k)
+        # W_k = dfp_matrix(W_k, y_k, s_k)
+        W_k = bfgs_matrix(W_k, y_k, s_k)
 
-    return x, current_f
+    return x, current_f, grad_f
 
 if __name__ == '__main__':
     ''' Main statements '''
-    x_bar = np.ones(2)
-    # x_bar = np.random.rand(4)
-    x_bar = np.array([-0.1, -0.2]) # initial point for sugar function
+    # x_bar = np.ones(2)
+    x_bar = np.random.rand(20)
+    # x_bar = np.array([-0.1, -0.2]) # initial point for sugar function
     initial_t = 1 # = {1, 5} (for armijo's)
-    iter_limit = 10
+    iter_limit = 100
     tol = 1e-05
 
-    # res, obj = newton_method(power, x_bar)
-    # res, obj = newton_method2(power, x_bar)
-    # res, obj = globalized_newton(power, x_bar, initial_t, iter_limit, tol)
-    res, obj = quasi_newton(power, x_bar, initial_t, iter_limit, tol)
+    # res, obj, grad = newton_method(power, x_bar)
+    # res, obj, grad = newton_method2(power, x_bar)
+    # res, obj, grad = globalized_newton(power, x_bar, initial_t, iter_limit, tol)
+    res, obj, grad = quasi_newton(power, x_bar, initial_t, iter_limit, tol)
 
     print '\n\n ---------- RESULT: ----------'
     print 'x* =', res, '\nw/ f(x*)=', obj
+    print 'f\'(x*)=', grad
     print 'Number of evaluations:', cont
     print ' -----------------------------'
