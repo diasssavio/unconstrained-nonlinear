@@ -121,7 +121,6 @@ def quasi_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
         print 'x_bar =', x
         # print 'W_k =', W_k
         print 'eigenvalues = ', np.linalg.eigvals(W_k)
-        # print ' -----------------------------'
         if np.linalg.norm(grad_f, np.inf) < tol:
             break
 
@@ -157,7 +156,7 @@ if __name__ == '__main__':
     # res, obj, grad = globalized_newton(power, x_bar, initial_t, iter_limit, tol)
     res, obj, grad = quasi_newton(power, x_bar, initial_t, iter_limit, tol)
 
-    print '\n\n ---------- RESULT: ----------'
+    print '\n ---------- RESULT: ----------'
     print 'x* =', res, '\nw/ f(x*)=', obj
     print 'f\'(x*)=', grad
     print 'Number of evaluations:', cont
