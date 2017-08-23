@@ -15,9 +15,10 @@ def cauchy_LS(func, x):
 
     return - np.dot(grad, - grad) / np.dot(grad, np.dot(hessian, grad))
 
-def cauchy_LS2(grad, direction, A):
+def cauchy_LS2(func, grad, direction):
     ''' Cauchy Line Search method for quadratic functions given A '''
-    return - np.dot(grad, direction) / np.dot(direction, np.dot(A, direction))
+    return - np.dot(grad, direction) / np.dot(direction, func(direction, 1, cont)[0] - func(np.zeros(len(direction)), 1, cont)[0])
+    # return - np.dot(grad, direction) / np.dot(direction, np.dot(A, direction))
 
 def armijo_LS(func, x, d, t0, theta, sigma):
     ''' Armijo Line Search method for descent methods '''
@@ -88,9 +89,9 @@ def grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05, line_search
         grad_f, _ = func(x, mode = 1, counter = cont)
         current_f, _ = func(x, mode = 0, counter = cont)
 
-        print ' -----------------------------'
-        print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        print 'x_bar =', x
+        # print ' -----------------------------'
+        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
+        # print 'x_bar =', x
 
         if np.linalg.norm(grad_f, np.inf) < tol:
             break
@@ -106,7 +107,7 @@ def grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05, line_search
         elif line_search == 3:
             t_k = goldstein_LS(func, x, direction, t, sigma_A, sigma_C)
 
-        print t_k
+        # print 't_k =', t_k
 
         x += t_k * direction
 
@@ -120,9 +121,9 @@ def conjugate_grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05):
         grad_f, _ = func(x, mode = 1, counter = cont)
         current_f, _ = func(x, mode = 0, counter = cont)
 
-        print ' -----------------------------'
-        print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        print 'x_bar =', x
+        # print ' -----------------------------'
+        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
+        # print 'x_bar =', x
 
         if np.linalg.norm(grad_f, np.inf) < tol:
             break
@@ -134,9 +135,9 @@ def conjugate_grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05):
             direction = - grad_f + beta_k * direction
 
         # Calculating cauchy exact stepsize for a quadratic function
-        t_k = cauchy_LS2(grad_f, direction, func(x, mode = 3)[0])
+        t_k = cauchy_LS2(func, grad_f, direction)
 
-        print 't_k =', t_k
+        # print 't_k =', t_k
         previous_grad = grad_f
 
         x += t_k * direction
@@ -146,16 +147,16 @@ def conjugate_grad_method(func, x0, t = 0.0001, iter_limit = 100, tol = 1e-05):
 if __name__ == '__main__':
     ''' Main statements '''
     # x_bar = np.ones(2)
-    # x_bar = np.ones(4)
+    x_bar = np.ones(4)
     # x_bar = np.random.rand(4)
-    x_bar = np.array([-0.1, -0.2])
+    # x_bar = np.array([-0.1, -0.2])
     initial_t = 1 # = {1, 5} (for armijo's)
     iter_limit = 100
     tol = 1e-05
 
     # res, obj, grad = grad_method(sugar, x_bar, initial_t, iter_limit, tol, 2)
     # res, obj, grad = grad_method(power, x_bar, initial_t, iter_limit, tol, 0)
-    res, obj, grad = conjugate_grad_method(sugar, x_bar, initial_t, iter_limit, tol)
+    res, obj, grad = conjugate_grad_method(power, x_bar, initial_t, iter_limit, tol)
 
     print '\n ---------- RESULT: ----------'
     print 'x* =', res, '\nw/ f(x*)=', obj

@@ -116,11 +116,11 @@ def quasi_newton(func, x0, t = 1, iter_limit = 100, tol = 1e-05):
     current_f, _ = func(x, mode = 0, counter = cont)
     grad_f, _ = func(x, mode = 1, counter = cont)
     for i in range(0, iter_limit):
-        print ' -----------------------------'
-        print 'Iteration #', i + 1, 'w/ f(x) =', current_f
-        print 'x_bar =', x
+        # print ' -----------------------------'
+        # print 'Iteration #', i + 1, 'w/ f(x) =', current_f
+        # print 'x_bar =', x
         # print 'W_k =', W_k
-        print 'eigenvalues = ', np.linalg.eigvals(W_k)
+        # print 'eigenvalues = ', np.linalg.eigvals(W_k)
         if np.linalg.norm(grad_f, np.inf) < tol:
             break
 
